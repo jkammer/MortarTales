@@ -22,6 +22,11 @@
 		<slf4j.version>1.7.12</slf4j.version>
 		<log4j.version>1.2.17</log4j.version>
 		
+		
+		<powermock.version>1.6.2</powermock.version>
+		<mockito.version>1.10.19</mockito.version>
+		<assertj.version>3.1.0</assertj.version>
+		
 		<jdk.version>1.8</jdk.version>
     </properties>
 
@@ -49,13 +54,25 @@
 			<dependency>
 				<groupId>org.assertj</groupId>
 				<artifactId>assertj-core</artifactId>
-				<version>3.1.0</version>
+				<version>${assertj.version}</version>
 			</dependency>
 			
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-all</artifactId>
-				<version>1.10.19</version>
+				<version>${mockito.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.powermock</groupId>
+				<artifactId>powermock-module-junit4</artifactId>
+				<version>${powermock.version}</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>org.powermock</groupId>
+				<artifactId>powermock-api-mockito</artifactId>
+				<version>${powermock.version}</version>
 			</dependency>
 		
 			<!-- Logging -->
