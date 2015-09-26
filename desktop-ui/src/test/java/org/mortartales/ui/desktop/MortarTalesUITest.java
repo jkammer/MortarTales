@@ -15,17 +15,22 @@ import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.*;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(Stage.class)
+@PrepareForTest({Stage.class, MenuScene.class})
 public class MortarTalesUITest {
 
 	private MortarTalesUI instance;
 
 	private Stage mockStage;
+	private MenuScene menuScene;
 	
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
 		
 		mockStage = PowerMockito.mock(Stage.class);
+		
+		menuScene = mock(MenuScene.class);
+		PowerMockito.mockStatic(MenuScene.class);
+		when(MenuScene.createDefault()).thenReturn(menuScene);
 		
 		instance = new MortarTalesUI();
     }
@@ -37,7 +42,7 @@ public class MortarTalesUITest {
 		
 		ArgumentCaptor<Scene> sceneArg = ArgumentCaptor.forClass(Scene.class);
 		verify(mockStage).setScene(sceneArg.capture());
-		assertThat(sceneArg.getValue()).isInstanceOf(MenuScene.class);
+		assertThat(sceneArg.getValue()).isSameAs(menuScene);
 	}
 
 	@Test

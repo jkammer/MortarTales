@@ -13,3 +13,4 @@ hs_err_pid*
 /core/target/
 /desktop-ui/target/
 /desktop-ui/nbactions.xml
+/target/

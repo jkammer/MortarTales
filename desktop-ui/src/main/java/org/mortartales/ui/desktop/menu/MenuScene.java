@@ -1,8 +1,8 @@
 package org.mortartales.ui.desktop.menu;
 
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.StackPane;
 
 /**
  * Renders controls of the game menu screen.
@@ -18,7 +18,10 @@ public class MenuScene extends Scene {
 	 * 
 	 * @return configured menu scene 
 	 */
-	public static MenuScene createDefault() {
-		return new MenuScene(new StackPane(), 1024, 600);
+	public static MenuScene createDefault() throws Exception {
+		FXMLLoader loader = new FXMLLoader(MenuScene.class.getResource("/ui/fxml/menu.fxml"));
+		loader.setController(new MenuController());
+		Parent root = (Parent) loader.load();
+		return new MenuScene(root, 1024, 600);
 	}
 }
