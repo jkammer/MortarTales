@@ -1,2 +1,2 @@
 # MortarTales
-A shoot'em up, starring mortars!
+A shoot'em up game, starring mortars!
