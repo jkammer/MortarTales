@@ -11,12 +11,13 @@ import org.mockito.ArgumentCaptor;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.mortartales.core.game.setup.GameConfigurationSetup;
 import org.mockito.InOrder;
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.*;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({MenuScene.class, FXMLLoader.class})
+@PrepareForTest({MenuScene.class, FXMLLoader.class, MenuController.class})
 public class MenuSceneTest {
 
 	private MenuScene instance;
@@ -24,6 +25,7 @@ public class MenuSceneTest {
 	
 	private FXMLLoader fxmlLoader;
 	private Parent sceneParent;
+	private MenuController menuController;
 	
 	private ArgumentCaptor<URL> fxmlUrlArg;
 	private ArgumentCaptor<Object> controllerArg;
@@ -35,6 +37,11 @@ public class MenuSceneTest {
 		controllerArg = ArgumentCaptor.forClass(Object.class);
 		
 		sceneParent = mock(Parent.class);
+		menuController = mock(MenuController.class);
+		PowerMockito
+				.whenNew(MenuController.class)
+				.withNoArguments()
+				.thenReturn(menuController);
 		
 		fxmlLoader = mock(FXMLLoader.class);
 		PowerMockito
@@ -44,26 +51,36 @@ public class MenuSceneTest {
 				.thenReturn(fxmlLoader);
 		
 		when(fxmlLoader.load()).thenReturn(sceneParent);
+    }
+	
+	private void initialiseMockScene() throws Exception {
 		
 		mockScene = mock(MenuScene.class);
 		PowerMockito
 				.whenNew(MenuScene.class)
 				.withAnyArguments()
 				.thenReturn(mockScene);
-    }
+		
+		doCallRealMethod().when(mockScene)
+				.setConfigurationSetup(any(GameConfigurationSetup.class));
+		doCallRealMethod().when(mockScene)
+				.setController(any(MenuController.class));
+	}
 
 	@Test
 	public void loadsMenuSceneDefinitionFromXml() throws Exception {
+		initialiseMockScene();
 		
 		instance = MenuScene.createDefault();
 		
 		PowerMockito.verifyNew(MenuScene.class)
-				.withArguments(same(sceneParent), anyDouble(), anyDouble());
+				.withArguments(same(sceneParent));
 		assertThat(fxmlUrlArg.getValue().toExternalForm()).endsWith("menu.fxml");
 	}
 
 	@Test
 	public void bindsUIControlsToMenuController() throws Exception {
+		initialiseMockScene();
 		
 		instance = MenuScene.createDefault();
 		
@@ -72,6 +89,30 @@ public class MenuSceneTest {
 		fxmlLoaderOrder.verify(fxmlLoader).load();
 		
 		assertThat(controllerArg.getValue()).isInstanceOf(MenuController.class);
+	}
+	
+	@Test
+	public void initialisesMenuSceneWithInitialisedMenuController() throws Exception {
+		initialiseMockScene();
+		
+		instance = MenuScene.createDefault();
+		
+		verify(fxmlLoader).setController(controllerArg.capture());
+		assertThat(controllerArg.getValue()).isInstanceOf(MenuController.class);
+		verify(instance).setController((MenuController) controllerArg.getValue());
+	}
+
+	@Test
+	public void initialisesMenuModelWithProvidedGameConfigurationSetup() throws Exception {
+		initialiseMockScene();
+		GameConfigurationSetup configurationSetup = mock(GameConfigurationSetup.class);
+		
+		instance = MenuScene.createDefault();
+		instance.setConfigurationSetup(configurationSetup);
+		
+		verify(instance).setController((MenuController) controllerArg.capture());
+		verify((MenuController) controllerArg.getValue())
+				.setConfigurationSetup(configurationSetup);
 	}
 
 }

@@ -18,6 +18,14 @@
     </properties>
 	
 	<dependencies>
+		
+		<!-- Application Dependencies -->
+		<dependency>
+			<groupId>org.mortartales</groupId>
+			<artifactId>core</artifactId>
+		</dependency>
+		
+		<!-- Test dependencies -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

@@ -2,6 +2,7 @@ package org.mortartales.ui.desktop;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import org.mortartales.core.game.setup.GameConfigurationSetup;
 import org.mortartales.ui.desktop.menu.MenuScene;
 
 /**
@@ -23,7 +24,9 @@ public class MortarTalesUI extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		primaryStage.setTitle("Mortar Tales");
 		
-		primaryStage.setScene(MenuScene.createDefault());
+		MenuScene scene = MenuScene.createDefault();
+		scene.setConfigurationSetup(new GameConfigurationSetup());
+		primaryStage.setScene(scene);
 		
 		primaryStage.show();
 	}
