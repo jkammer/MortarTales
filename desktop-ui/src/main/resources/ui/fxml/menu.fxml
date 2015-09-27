@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.geometry.*?>
 <?import java.lang.*?>
@@ -23,7 +24,7 @@
                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="105.0" />
                </columnConstraints>
                <rowConstraints>
-                  <RowConstraints />
+                  <RowConstraints vgrow="NEVER" minHeight="30.0"/>
                   <RowConstraints />
                   <RowConstraints />
                   <RowConstraints />
@@ -35,15 +36,21 @@
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </padding>
                <children>
-                  <Label text="Player setup" GridPane.rowIndex="0" />
-				  <Button fx:id="player1NameBt"  GridPane.rowIndex="1" GridPane.columnIndex="0" mnemonicParsing="false" text="Player 1" />
-				  <Button fx:id="player1StateBt" GridPane.rowIndex="1" GridPane.columnIndex="1" mnemonicParsing="false" text="Inactive" />
-				  <Button fx:id="player2NameBt"  GridPane.rowIndex="2" GridPane.columnIndex="0" mnemonicParsing="false" text="Player 2" />
-				  <Button fx:id="player2StateBt" GridPane.rowIndex="2" GridPane.columnIndex="1" mnemonicParsing="false" text="Inactive" />
-				  <Button fx:id="player3NameBt"  GridPane.rowIndex="3" GridPane.columnIndex="0" mnemonicParsing="false" text="Player 3" />
-				  <Button fx:id="player3StateBt" GridPane.rowIndex="3" GridPane.columnIndex="1" mnemonicParsing="false" text="Inactive" />
-				  <Button fx:id="player4NameBt"  GridPane.rowIndex="4" GridPane.columnIndex="0" mnemonicParsing="false" text="Player 4" />
-				  <Button fx:id="player4StateBt" GridPane.rowIndex="4" GridPane.columnIndex="1" mnemonicParsing="false" text="Inactive" />
+                  <Label text="Player setup" underline="true" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets></Label>
+				  <Button fx:id="player1NameBt" mnemonicParsing="false" text="Player 1" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+				  <Button fx:id="player1StateBt" mnemonicParsing="false" text="Inactive" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+				  <Button fx:id="player2NameBt" mnemonicParsing="false" text="Player 2" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+				  <Button fx:id="player2StateBt" mnemonicParsing="false" text="Inactive" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+				  <Button fx:id="player3NameBt" mnemonicParsing="false" text="Player 3" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+				  <Button fx:id="player3StateBt" mnemonicParsing="false" text="Inactive" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+				  <Button fx:id="player4NameBt" mnemonicParsing="false" text="Player 4" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+				  <Button fx:id="player4StateBt" mnemonicParsing="false" text="Inactive" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                </children>
             </GridPane>
          </children>
@@ -56,7 +63,7 @@
                   <ColumnConstraints hgrow="SOMETIMES" maxWidth="105.0" minWidth="10.0" prefWidth="105.0" />
                </columnConstraints>
                <rowConstraints>
-                  <RowConstraints />
+                  <RowConstraints vgrow="NEVER" minHeight="30.0"/>
                   <RowConstraints />
                   <RowConstraints />
                   <RowConstraints />
@@ -67,7 +74,10 @@
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </padding>
                <children>
-                  <Label text="Map setup" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                  <Label text="Map setup" underline="true" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="0">
+                     <font>
+                        <Font size="18.0" />
+                     </font></Label>
                   <Label text="Location:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
                   <ChoiceBox fx:id="locationCb" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                </children>
