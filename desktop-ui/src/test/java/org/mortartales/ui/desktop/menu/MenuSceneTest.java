@@ -1,6 +1,7 @@
 package org.mortartales.ui.desktop.menu;
 
 import java.net.URL;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import org.junit.Before;
@@ -22,6 +23,8 @@ public class MenuSceneTest {
 
 	private MenuScene instance;
 	private MenuScene mockScene;
+	
+	private ObservableList<String> mockSceneStylesheets;
 	
 	private FXMLLoader fxmlLoader;
 	private Parent sceneParent;
@@ -55,7 +58,10 @@ public class MenuSceneTest {
 	
 	private void initialiseMockScene() throws Exception {
 		
-		mockScene = mock(MenuScene.class);
+		mockSceneStylesheets = mock(ObservableList.class);
+		
+		mockScene = PowerMockito.mock(MenuScene.class);
+		when(mockScene.getStylesheets()).thenReturn(mockSceneStylesheets);
 		PowerMockito
 				.whenNew(MenuScene.class)
 				.withAnyArguments()
@@ -63,8 +69,6 @@ public class MenuSceneTest {
 		
 		doCallRealMethod().when(mockScene)
 				.setConfigurationSetup(any(GameConfigurationSetup.class));
-		doCallRealMethod().when(mockScene)
-				.setController(any(MenuController.class));
 	}
 
 	@Test
@@ -101,17 +105,27 @@ public class MenuSceneTest {
 		assertThat(controllerArg.getValue()).isInstanceOf(MenuController.class);
 		verify(instance).setController((MenuController) controllerArg.getValue());
 	}
+	
+	@Test
+	public void initialisesMenuSceneWithMenuStyleSheet() throws Exception {
+		initialiseMockScene();
+		
+		instance = MenuScene.createDefault();
+		
+		verify(mockSceneStylesheets).add("ui/fxml/menu.css");
+	}
 
 	@Test
 	public void initialisesMenuModelWithProvidedGameConfigurationSetup() throws Exception {
 		initialiseMockScene();
 		GameConfigurationSetup configurationSetup = mock(GameConfigurationSetup.class);
+		doCallRealMethod().when(mockScene)
+				.setController(any(MenuController.class));
 		
 		instance = MenuScene.createDefault();
 		instance.setConfigurationSetup(configurationSetup);
 		
-		verify(instance).setController((MenuController) controllerArg.capture());
-		verify((MenuController) controllerArg.getValue())
+		verify(menuController)
 				.setConfigurationSetup(configurationSetup);
 	}
 

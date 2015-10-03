@@ -55,6 +55,7 @@ public class MenuScene extends Scene {
 		
 		MenuScene menuScene = new MenuScene(rootNode);
 		menuScene.setController(menuController);
+		menuScene.getStylesheets().add("ui/fxml/menu.css");
 		return menuScene;
 	}
 }
