@@ -14,3 +14,8 @@ hs_err_pid*
 /desktop-ui/target/
 /desktop-ui/nbactions.xml
 /target/
+/.nb-gradle/
+/desktop-ui/.nb-gradle/
+/build/
+.nb-gradle-properties
+.gradle

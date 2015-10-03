@@ -1,0 +1,3 @@
+rootProject.name = 'mortartales'
+include ':core'
+include ':desktop-ui'
