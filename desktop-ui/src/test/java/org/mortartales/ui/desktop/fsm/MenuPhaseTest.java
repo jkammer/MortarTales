@@ -14,6 +14,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import org.mortartales.ui.desktop.SameThreadUiInteractionRunner;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -28,9 +29,13 @@ public class MenuPhaseTest {
 	private GameConfigurationSetup mockGameConfigurationSetup;
 	
 	private ArgumentCaptor<MenuScene> sceneArg;
+	
+	private SameThreadUiInteractionRunner uiRunner;
 
     @Before
     public void setUp() throws IOException {
+		
+		uiRunner = new SameThreadUiInteractionRunner();
 		
 		mockStage = PowerMockito.mock(Stage.class);
 		mockGameConfigurationSetup = mock(GameConfigurationSetup.class);
@@ -41,16 +46,13 @@ public class MenuPhaseTest {
 		
 		sceneArg = ArgumentCaptor.forClass(MenuScene.class);
 		
-		instance = new MenuPhase(mockStage);
+		instance = new MenuPhase(mockStage, uiRunner);
     }
-
-	@Test
-	public void testRun() {
-	}
 
 	@Test
 	public void setsMenuSceneOnStartup() throws Exception{
 		
+		uiRunner.executeImmediatelly();
 		instance.run(mockGameConfigurationSetup);
 		
 		verify(mockStage).setScene(sceneArg.capture());
@@ -60,18 +62,28 @@ public class MenuPhaseTest {
 	@Test
 	public void showsTargetStage() throws Exception{
 		
+		uiRunner.executeImmediatelly();
 		instance.run(mockGameConfigurationSetup);
 		
 		verify(mockStage).show();
 	}
 
 	@Test
-	public void setsInitialMenuConfigurationSetup() throws Exception{
+	public void setsInitialMenuConfigurationSetup() throws Exception {
 		
+		uiRunner.executeImmediatelly();
 		instance.run(mockGameConfigurationSetup);
 		
 		InOrder sceneInitOrder = inOrder(menuScene, mockStage);
 		sceneInitOrder.verify(menuScene).setConfigurationSetup(mockGameConfigurationSetup);
 		sceneInitOrder.verify(mockStage).show();
+	}
+	
+	@Test
+	public void doesNotInteractWithUIElementsInFSMThread() {
+		
+		instance.run(mockGameConfigurationSetup);
+		
+		verifyZeroInteractions(mockStage);
 	}
 }

@@ -5,6 +5,7 @@ import javafx.stage.Stage;
 import org.mortartales.core.game.configuration.GameConfiguration;
 import org.mortartales.core.game.fsm.GamePhase;
 import org.mortartales.core.game.setup.GameConfigurationSetup;
+import org.mortartales.ui.desktop.UiInteractionRunner;
 import org.mortartales.ui.desktop.menu.MenuScene;
 
 /**
@@ -13,24 +14,42 @@ import org.mortartales.ui.desktop.menu.MenuScene;
 public class MenuPhase implements GamePhase<GameConfigurationSetup, GameConfiguration> {
 
 	private final Stage targetStage;
+	private final UiInteractionRunner uiRunner;
 	
-	public MenuPhase(Stage targetStage) { 
+	private MenuScene scene;
+	
+	public MenuPhase(Stage targetStage, UiInteractionRunner uiInteractionRunner) { 
 	
 		this.targetStage = targetStage;
+		this.uiRunner = uiInteractionRunner;
 	}
 	
 	@Override
 	public GameConfiguration run(GameConfigurationSetup state) {
 		
 		try {
-			MenuScene scene = MenuScene.createDefault();
-			scene.setConfigurationSetup(state);
-			targetStage.setScene(scene);
-
-			targetStage.show();
-			return null;
+			initialiseScene(state);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
+		}
+		
+		uiRunner.runLater(this::showMenuScene);
+		
+		return null;
+	}
+	
+	private void initialiseScene(GameConfigurationSetup state) throws IOException {
+		scene = MenuScene.createDefault();
+		scene.setConfigurationSetup(state);		
+	}
+	
+	private void showMenuScene() {
+		try {
+			targetStage.setScene(scene);
+			targetStage.show();
+		} catch (Exception e) {
+			e.printStackTrace();
+			// TODO: show exception box on stage and call main thread
 		}
 	}
 }

@@ -15,6 +15,8 @@ public interface GamePhase<T, R> {
 	/**
 	 * Executes this game phase with the given initial state.
 	 * 
+	 * This method is always called from the FSM thread, and should only return if the phase is complete.
+	 * 
 	 * @param state
 	 *           initial state of the game phase
 	 * 

@@ -21,3 +21,6 @@ hs_err_pid*
 /core/.nb-gradle/
 /core/build/
 /desktop-ui/build/
+/.gradle
+/core/.gradle
+/desktop-ui/.gradle
