@@ -1,70 +1,80 @@
 package org.mortartales.ui.desktop;
 
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.junit.Before;
 
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.mortartales.ui.desktop.menu.MenuScene;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.api.mockito.PowerMockito;
 import org.mockito.InOrder;
-import org.mortartales.core.game.setup.GameConfigurationSetup;
+import org.mortartales.core.game.Game;
+import org.mortartales.core.game.fsm.GameFSM;
+import org.mortartales.core.game.fsm.GamePhase;
+import org.mortartales.ui.desktop.fsm.ApplicationClosePhase;
+import org.mortartales.ui.desktop.fsm.MenuPhase;
 import static org.mockito.Mockito.*;
-import static org.assertj.core.api.Assertions.*;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({Stage.class, MenuScene.class})
+@PrepareForTest({Stage.class, MortarTalesUI.class})
 public class MortarTalesUITest {
 
 	private MortarTalesUI instance;
 
-	private Stage mockStage;
-	private MenuScene menuScene;
+	private GameFSM mockGameFsm;
 	
-	private ArgumentCaptor<MenuScene> sceneArg;
+	private Stage mockStage;
 	
     @Before
     public void setUp() throws Exception {
 		
 		mockStage = PowerMockito.mock(Stage.class);
 		
-		menuScene = mock(MenuScene.class);
-		PowerMockito.mockStatic(MenuScene.class);
-		when(MenuScene.createDefault()).thenReturn(menuScene, (MenuScene) null);
+		mockGameFsm = mock(GameFSM.class);
+		when(mockGameFsm.withMenuPhase(any(GamePhase.class))).thenReturn(mockGameFsm);
+		when(mockGameFsm.withClosePhase(any(GamePhase.class))).thenReturn(mockGameFsm);
 		
-		sceneArg = ArgumentCaptor.forClass(MenuScene.class);
+		PowerMockito
+				.whenNew(GameFSM.class)
+				.withArguments(isNotNull(Game.class))
+				.thenReturn(mockGameFsm);
 		
 		instance = new MortarTalesUI();
     }
 
 	@Test
-	public void setsMenuSceneOnStartup() throws Exception{
+	public void initialisesMenuFsmStage() throws Exception {
 		
 		instance.start(mockStage);
 		
-		verify(mockStage).setScene(sceneArg.capture());
-		assertThat(sceneArg.getValue()).isSameAs(menuScene);
+		verify(mockGameFsm).withMenuPhase(any(MenuPhase.class));
 	}
 
+	@Test
+	public void initialisesApplicationCloseFsmStage() throws Exception {
+		
+		instance.start(mockStage);
+		
+		verify(mockGameFsm).withClosePhase(any(ApplicationClosePhase.class));
+	}
+
+	@Test
+	public void startsGameFSMAfterSettingsGamePhases() throws Exception {
+		
+		instance.start(mockStage);
+		
+		InOrder gameFsmOrder = inOrder(mockGameFsm);
+		gameFsmOrder.verify(mockGameFsm).withMenuPhase(any(MenuPhase.class));
+		gameFsmOrder.verify(mockGameFsm).withClosePhase(any(ApplicationClosePhase.class));
+		gameFsmOrder.verify(mockGameFsm).start();
+	}
+	
 	@Test
 	public void setsGameTitle() throws Exception{
 		
 		instance.start(mockStage);
 		
 		verify(mockStage).setTitle("Mortar Tales");
-	}
-
-	@Test
-	public void setsInitialMenuConfigurationSetup() throws Exception{
-		
-		instance.start(mockStage);
-		
-		InOrder sceneInitOrder = inOrder(menuScene, mockStage);
-		sceneInitOrder.verify(menuScene).setConfigurationSetup(any(GameConfigurationSetup.class));
-		sceneInitOrder.verify(mockStage).show();
 	}
 }
