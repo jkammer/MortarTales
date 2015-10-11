@@ -15,75 +15,113 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import org.mortartales.ui.desktop.SameThreadUiInteractionRunner;
-import static org.assertj.core.api.Assertions.*;
+import org.junit.After;
+import org.mortartales.core.game.configuration.GameConfiguration;
+import org.mortartales.ui.testutils.AssertionsThread;
 import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.*;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({MenuScene.class, Stage.class})
 public class MenuPhaseTest {
 
 	private MenuPhase instance;
-	
+
 	private Stage mockStage;
 	private MenuScene menuScene;
 	private GameConfigurationSetup mockGameConfigurationSetup;
-	
+
 	private ArgumentCaptor<MenuScene> sceneArg;
-	
+
 	private SameThreadUiInteractionRunner uiRunner;
 
-    @Before
-    public void setUp() throws IOException {
+	private Thread menuPhaseRunner;
+	private GameConfiguration menuPhaseResult;
+	
+	private AssertionsThread assertionsThread;
+
+	@Before
+	public void setUp() throws IOException {
 		
+		assertionsThread = new AssertionsThread();
+
 		uiRunner = new SameThreadUiInteractionRunner();
-		
+
 		mockStage = PowerMockito.mock(Stage.class);
 		mockGameConfigurationSetup = mock(GameConfigurationSetup.class);
-		
+
 		menuScene = mock(MenuScene.class);
 		PowerMockito.mockStatic(MenuScene.class);
 		when(MenuScene.createDefault()).thenReturn(menuScene, (MenuScene) null);
-		
+
 		sceneArg = ArgumentCaptor.forClass(MenuScene.class);
-		
+
 		instance = new MenuPhase(mockStage, uiRunner);
-    }
+	}
+
+	@After
+	public void tearDown() throws InterruptedException {
+		if (menuPhaseRunner != null) {
+			menuPhaseRunner.join(1000);
+		}
+	}
+
+	private void runMenuPhase(GameConfigurationSetup gameConfigurationSetup) {
+		menuPhaseRunner = new Thread(() -> {
+			menuPhaseResult = instance.run(gameConfigurationSetup);
+		});
+		menuPhaseRunner.setName("MenuPhaseTest");
+		menuPhaseRunner.start();
+	}
 
 	@Test
-	public void setsMenuSceneOnStartup() throws Exception{
+	public void setsMenuSceneOnStartup() throws Exception {
+
+		assertionsThread.addAssertion(() -> verify(mockStage).setScene(sceneArg.capture()));
+		assertionsThread.addAssertion(() -> assertThat(sceneArg.getValue()).isSameAs(menuScene));
 		
 		uiRunner.executeImmediatelly();
-		instance.run(mockGameConfigurationSetup);
 		
-		verify(mockStage).setScene(sceneArg.capture());
-		assertThat(sceneArg.getValue()).isSameAs(menuScene);
+		runMenuPhase(mockGameConfigurationSetup);
+		
+		assertionsThread.startAndJoin();
+		assertionsThread.verifyAssertions();
 	}
-	
+
 	@Test
-	public void showsTargetStage() throws Exception{
-		
+	public void showsTargetStage() throws Exception {
+		assertionsThread.addAssertion(() -> verify(mockStage).show());
+
 		uiRunner.executeImmediatelly();
-		instance.run(mockGameConfigurationSetup);
+		runMenuPhase(mockGameConfigurationSetup);
 		
-		verify(mockStage).show();
+		assertionsThread.startAndJoin();
+		assertionsThread.verifyAssertions();
 	}
 
 	@Test
 	public void setsInitialMenuConfigurationSetup() throws Exception {
+		assertionsThread.addAssertion(() -> {
+			InOrder sceneInitOrder = inOrder(menuScene, mockStage);
+			sceneInitOrder.verify(menuScene).setConfigurationSetup(mockGameConfigurationSetup);
+			sceneInitOrder.verify(mockStage).show();
+		});
 		
 		uiRunner.executeImmediatelly();
-		instance.run(mockGameConfigurationSetup);
+		runMenuPhase(mockGameConfigurationSetup);
 		
-		InOrder sceneInitOrder = inOrder(menuScene, mockStage);
-		sceneInitOrder.verify(menuScene).setConfigurationSetup(mockGameConfigurationSetup);
-		sceneInitOrder.verify(mockStage).show();
+		assertionsThread.startAndJoin();
+		assertionsThread.verifyAssertions();
 	}
-	
+
 	@Test
-	public void doesNotInteractWithUIElementsInFSMThread() {
+	public void doesNotInteractWithUIElementsInFSMThread() throws Exception {
+		assertionsThread.addAssertion(() -> assertThat(uiRunner.hasTasksInQueue()).isTrue());
+		assertionsThread.addAssertion(() -> verifyZeroInteractions(mockStage));
+
+		runMenuPhase(mockGameConfigurationSetup);
 		
-		instance.run(mockGameConfigurationSetup);
-		
-		verifyZeroInteractions(mockStage);
+		assertionsThread.startAndJoin();
+		assertionsThread.verifyAssertions();
 	}
 }

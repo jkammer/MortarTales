@@ -30,6 +30,15 @@ public class SameThreadUiInteractionRunner implements UiInteractionRunner {
 	}
 	
 	/**
+	 * Determines whether this executor's task queue contains any tasks which have not yet been executed.
+	 * 
+	 * @return <code>true</code> if this execuctor's task queue is not empty, <code>false</code> otherwise
+	 */
+	public boolean hasTasksInQueue() {
+		return !taskQueue.isEmpty();
+	}
+	
+	/**
 	 * Executes all scheduled tasks in the current thread.
 	 */
 	public void runNow() {
